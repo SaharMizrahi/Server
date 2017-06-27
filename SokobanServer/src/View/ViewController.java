@@ -11,20 +11,34 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit;import javax.naming.LimitExceededException;
 
+import ViewModel.ServerViewModel;
 import ViewModel.ViewModelInterface;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -34,6 +48,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class ViewController implements Initializable, ViewInterface,Observer {
+	private int numOfSessions=0;
 	private ViewModelInterface viewModel;
 	private MyClientHandler ch;
 	private int port;
@@ -43,6 +58,8 @@ public class ViewController implements Initializable, ViewInterface,Observer {
 	private Socket aClient=null;
 	private Thread serverthread;
 	private ObservableList<Session> list;
+	private SimpleDateFormat sdf;
+	private Date date;
 	/***GUI Arguments*****/
 	@FXML
 	private Button serverButton;
@@ -60,10 +77,18 @@ public class ViewController implements Initializable, ViewInterface,Observer {
 	private TableColumn<Session, String> timeCol;
 	@FXML
 	private TableColumn<Session, String> stateCol;
-	/*******************/
-	/***GUI Methods*****/
-	/*******************/
+	private int limit;
 	@FXML
+	private Slider limitSlider;
+	@FXML
+	private Label limitLabel;
+	
+	/***************************/
+	/***implemented Methods*****/
+	/***************************/
+	
+	@FXML 
+
 
 	public void runServer()
 	{
@@ -98,7 +123,12 @@ public class ViewController implements Initializable, ViewInterface,Observer {
 					aClient=server.accept();
 					pool.execute(()->{
 						try {
-							ch=new MyClientHandler(aClient.getInputStream(),aClient.getOutputStream());
+							numOfSessions++;
+							date=new Date();
+							list.add(new Session(""+numOfSessions, "Sokoban game", ""+sdf.format(date), "waiting"));
+							
+							//resetTable();
+							ch=new MyClientHandler(aClient.getInputStream(),aClient.getOutputStream(),numOfSessions);
 							viewModel.addClientHandler(ch);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
@@ -133,7 +163,42 @@ public class ViewController implements Initializable, ViewInterface,Observer {
 
 		
 	}
-	
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		if(arg0==this.viewModel)
+		{
+			int num=((ServerViewModel)viewModel).getFinishedIndex();
+			Session s=list.get(num-1);
+			s.setState("done");
+			list.remove(num-1);
+			list.add(s);
+		}
+		
+	}
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// TODO Auto-generated method stub
+		list=FXCollections.observableArrayList();
+		resetTable();
+		date=new Date();
+		sdf=new SimpleDateFormat("HH:mm:ss");
+		limitLabel.setText("10");
+		limit=10;
+		limitSlider.valueProperty().addListener(new ChangeListener<Object>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+				// TODO Auto-generated method stub
+				limitLabel.textProperty().setValue(""+(int)limitSlider.getValue());
+				limit=(int)limitSlider.getValue();
+				pool.setCorePoolSize(limit);
+			}
+		});;
+		restart();
+
+	}
+
 	/******************************/
 	/*****getters and setters******/
 	/******************************/
@@ -146,25 +211,27 @@ public class ViewController implements Initializable, ViewInterface,Observer {
 	/*******Private Methods*******/
 	/*****************************/
 
+	/**
+	 * reatart the socket thread
+	 */
 	private void restart()
 	{
-		BlockingQueue<Runnable> bq=new ArrayBlockingQueue<>(10);
+		
+		BlockingQueue<Runnable> bq=new ArrayBlockingQueue<>(limit);
 		this.port=8888;
 		pool=new ThreadPoolExecutor(1, 5, 2, TimeUnit.SECONDS, bq);
 		serverButton.setDisable(false);
 		shutDownButton.setDisable(true);
 		stateFlag.setFill(Color.RED);
 	}
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
-		restart();
-		
+	/**
+	 * reset the table in the GUI
+	 */
+	private void resetTable()
+	{
 		table.setEditable(true);
 
-		list=FXCollections.observableArrayList();
-		list.add(new Session("test", "test", "test", "test"));
-		list.add(new Session("1", "1", "1", "1"));
+
 		table.getColumns().clear();
 		table.setItems(list);
 		table.getColumns().add(this.clientCol);
@@ -175,14 +242,9 @@ public class ViewController implements Initializable, ViewInterface,Observer {
 		processCol.setCellValueFactory(new PropertyValueFactory<>("Process"));
 		timeCol.setCellValueFactory(new PropertyValueFactory<>("Time"));
 		stateCol.setCellValueFactory(new PropertyValueFactory<>("State"));
-
-
 	}
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+	
+
 	
 
 	

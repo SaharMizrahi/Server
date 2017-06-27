@@ -5,6 +5,11 @@ import Model.Data.Position;
 import SearchLib.Action;
 import SearchLib.Searchable;
 import SearchLib.State;
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ *
+ */
 public abstract class CommonSearchable implements Searchable<Position>
 {
 	
@@ -13,10 +18,40 @@ public abstract class CommonSearchable implements Searchable<Position>
 	private Level2D level;
 	
 	
+	/***************************/
+	/**implemented methods******/
+	/***************************/
+	public abstract boolean checkPossibleMove(Position currentPosition,Action action);
+	@Override
+	public State<Position> getInitialState()
+	{
+		// TODO Auto-generated method stub
+		State<Position> start=new State<>(null,0,fromPosition,null);
+		
+		return start;
+	}
+
+	@Override
+	public State<Position> getGoalState()
+	{
+		// TODO Auto-generated method stub
+		State<Position> goal=new State<>(null,0,toPosition,null);
+		return goal;
+	}
 	
+	//constructor
+	public CommonSearchable(Position fromPosition, Position toPosition, Level2D level) {
+		super();
+		this.fromPosition = fromPosition;
+		this.toPosition = toPosition;
+
+		this.level = level;
+	}
 
 	
-
+	/***********************/
+	/**getters and setters**/
+	/***********************/
 	public Position getFromPosition()
 	{
 		return fromPosition;
@@ -47,33 +82,11 @@ public abstract class CommonSearchable implements Searchable<Position>
 		this.level = level;
 	}
 
-	public abstract boolean checkPossibleMove(Position currentPosition,Action action);
-
-	public CommonSearchable(Position fromPosition, Position toPosition, Level2D level) {
-		super();
-		this.fromPosition = fromPosition;
-		this.toPosition = toPosition;
-
-		this.level = level;
-	}
 
 
-	@Override
-	public State<Position> getInitialState()
-	{
-		// TODO Auto-generated method stub
-		State<Position> start=new State<>(null,0,fromPosition,null);
-		
-		return start;
-	}
 
-	@Override
-	public State<Position> getGoalState()
-	{
-		// TODO Auto-generated method stub
-		State<Position> goal=new State<>(null,0,toPosition,null);
-		return goal;
-	}
+
+
 
 
 

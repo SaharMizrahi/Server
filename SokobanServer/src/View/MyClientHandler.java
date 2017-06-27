@@ -11,8 +11,8 @@ import java.util.Observable;
 
 
 /** A Class that implements ClientHandler interface
- * it has String that refers to the client command, one string that refers the message to the user
  * 
+ * This class communicate with the client
  * 
  * @author Sahar Mizrahi and Gal Ezra
  *
@@ -21,13 +21,10 @@ public class MyClientHandler extends Observable implements ClientHandler {
 
 	private PrintWriter pw;
 	private BufferedReader br;
-	
+	private int clientIndex;
 	
 
-	/**
-	 * The codes of the method from ClientHandler interface
-	 */
-	
+
 
 
 	
@@ -37,15 +34,17 @@ public class MyClientHandler extends Observable implements ClientHandler {
 	/**
 	 * Default constructor
 	 */
-	public MyClientHandler(InputStream in,OutputStream out) {
+	public MyClientHandler(InputStream in,OutputStream out,int index) {
 		super();
 		// TODO Auto-generated constructor stub
 		br=new BufferedReader(new InputStreamReader(in));
 		pw=new PrintWriter(out);
-		
+		clientIndex=index;
 
 	}
-
+	/**************************/
+	/****implemented methods***/
+	/***************************/
 	@Override
 	public String getRequest() {
 		// TODO Auto-generated method stub
@@ -64,6 +63,12 @@ public class MyClientHandler extends Observable implements ClientHandler {
 		// TODO Auto-generated method stub
 		pw.println(str);
 		pw.flush();
+	}
+
+	@Override
+	public int getIndex() {
+		// TODO Auto-generated method stub
+		return this.clientIndex;
 	}
 
 

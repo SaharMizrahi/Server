@@ -16,7 +16,12 @@ import StripsLib.Clause;
 import StripsLib.PlanAction;
 import StripsLib.Plannable;
 import StripsLib.Predicate;
-
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ * implemetation of plannable
+ *
+ */
 public class PlannableSokoban implements Plannable
 {
 	private Level2D level;
@@ -26,27 +31,81 @@ public class PlannableSokoban implements Plannable
 	private BoxSearchable searchable;
 	private static Position playerCurrentPosition;
 	private static LinkedList<Position> boxCurrentPositions;
-	private HashMap<String, String> getCoupledBoxAndDest(Level2D level)
+	
+	/*************************/
+	/***implemented methods***/
+	/*************************/
+	@Override
+	public Clause getGoal()
 	{
-		HashMap<String, String> coupleTable=new HashMap<>();
-		ArrayList<Position> bl=new ArrayList<>();
-		for(Item b : level.getBoxList())
-		{
-			bl.add(b.getPos());
-		}
-		ArrayList<Position> dl=new ArrayList<>();
-		for (Item d : level.getDestinationList())
-		{
-			dl.add(d.getPos());
-		}
-		for(int i=0;i<dl.size();i++)
-		{
-			coupleTable.put("b"+(i+1), dl.get(i).toString());
-		}
-		
-		
-		return coupleTable;
+		// TODO Auto-generated method stub
+		return this.goal;
 	}
+
+	@Override
+	public Clause getKnowledgebase()
+	{
+		// TODO Auto-generated method stub
+		return this.kb;
+	}
+	@Override
+	public Set<PlanAction> getSatisfyingActions(Predicate topPredicate)
+	{
+		// TODO Auto-generated method stub
+		Set<PlanAction> satisfyingActions=null;
+		Predicate boxKbPred=null;
+		Predicate playerKbPred=null;
+		Position playerPos=null,boxPos=null,goalPos=null;
+		if(topPredicate.getType().equals("BoxAt"))
+		{
+
+			for(Predicate p : kb.getPredicatesSet())
+			{
+				if(topPredicate.getId().equals(p.getId()))
+					boxKbPred=p;
+				if(p.getType().equals("PlayerAt"))
+					playerKbPred=p;
+			}
+			playerPos=new Position(playerKbPred.getValue().toCharArray()[1]-48, playerKbPred.getValue().toCharArray()[3]-48);
+			boxPos=new Position(boxKbPred.getValue().toCharArray()[1]-48, boxKbPred.getValue().toCharArray()[3]-48);
+			goalPos=new Position(topPredicate.getValue().toCharArray()[1]-48, topPredicate.getValue().toCharArray()[3]-48);
+			PlayerSearchable ps=new PlayerSearchable(playerPos, boxPos, level);
+			ps.setCurrentBoxPositions(boxCurrentPositions);
+			BFS pbfs=new BFS<>();
+			searchable.setFromPosition(boxPos);
+			searchable.setToPosition(goalPos);
+			searchable.setSearcher(pbfs);
+			searchable.setPlayerPosition(playerPos);
+			searchable.setCurrentBoxPositions(boxCurrentPositions);
+			searchable.setCurrentSearchableBox(boxPos);
+			
+			Solution solution=mainBfs.search(searchable);
+		
+			if(solution!=null)
+			{
+				//this is the player last position
+				playerCurrentPosition=(Position) mainBfs.getFinalState().getCameFrom().getState();
+				boxCurrentPositions.remove(boxPos);
+				boxCurrentPositions.add(goalPos);
+				
+				satisfyingActions=new HashSet<>();
+				PlanAction pa=new PlanAction("MoveBox",topPredicate.getId() , topPredicate.getValue());
+				pa.setEffects(new Clause(
+						new SokoPredicate("BoxAt", pa.getId(), pa.getValue()),
+						new SokoPredicate("PlayerAt", "Player", playerCurrentPosition.toString()),
+						new SokoPredicate("ClearAt", playerPos.toString(), playerPos.toString())));
+				pa.setPreConditions(new Clause(new SokoPredicate("ClearAt", topPredicate.getValue(), topPredicate.getValue())));
+				pa.setSubActions(solution.getActionList());
+				satisfyingActions.add(pa);
+			}
+			else
+				return null;
+		}
+		
+		return satisfyingActions;
+	}
+
+	//constructor
 	public PlannableSokoban(Level2D level) {
 		super();
 		this.level = level;
@@ -109,77 +168,33 @@ public class PlannableSokoban implements Plannable
 
 	}
 
-	@Override
-	public Clause getGoal()
+	/*********************/
+	/**private methods****/
+	/*********************/
+	private HashMap<String, String> getCoupledBoxAndDest(Level2D level)
 	{
-		// TODO Auto-generated method stub
-		return this.goal;
-	}
-
-	@Override
-	public Clause getKnowledgebase()
-	{
-		// TODO Auto-generated method stub
-		return this.kb;
-	}
-
-
-	@Override
-	public Set<PlanAction> getSatisfyingActions(Predicate topPredicate)
-	{
-		// TODO Auto-generated method stub
-		Set<PlanAction> satisfyingActions=null;
-		Predicate boxKbPred=null;
-		Predicate playerKbPred=null;
-		Position playerPos=null,boxPos=null,goalPos=null;
-		if(topPredicate.getType().equals("BoxAt"))
+		HashMap<String, String> coupleTable=new HashMap<>();
+		ArrayList<Position> bl=new ArrayList<>();
+		for(Item b : level.getBoxList())
 		{
-
-			for(Predicate p : kb.getPredicatesSet())
-			{
-				if(topPredicate.getId().equals(p.getId()))
-					boxKbPred=p;
-				if(p.getType().equals("PlayerAt"))
-					playerKbPred=p;
-			}
-			playerPos=new Position(playerKbPred.getValue().toCharArray()[1]-48, playerKbPred.getValue().toCharArray()[3]-48);
-			boxPos=new Position(boxKbPred.getValue().toCharArray()[1]-48, boxKbPred.getValue().toCharArray()[3]-48);
-			goalPos=new Position(topPredicate.getValue().toCharArray()[1]-48, topPredicate.getValue().toCharArray()[3]-48);
-			PlayerSearchable ps=new PlayerSearchable(playerPos, boxPos, level);
-			ps.setCurrentBoxPositions(boxCurrentPositions);
-			BFS pbfs=new BFS<>();
-			searchable.setFromPosition(boxPos);
-			searchable.setToPosition(goalPos);
-			searchable.setSearcher(pbfs);
-			searchable.setPlayerPosition(playerPos);
-			searchable.setCurrentBoxPositions(boxCurrentPositions);
-			searchable.setCurrentSearchableBox(boxPos);
-			
-			Solution solution=mainBfs.search(searchable);
-		
-			if(solution!=null)
-			{
-				//this is the player last position
-				playerCurrentPosition=(Position) mainBfs.getFinalState().getCameFrom().getState();
-				boxCurrentPositions.remove(boxPos);
-				boxCurrentPositions.add(goalPos);
-				
-				satisfyingActions=new HashSet<>();
-				PlanAction pa=new PlanAction("MoveBox",topPredicate.getId() , topPredicate.getValue());
-				pa.setEffects(new Clause(
-						new SokoPredicate("BoxAt", pa.getId(), pa.getValue()),
-						new SokoPredicate("PlayerAt", "Player", playerCurrentPosition.toString()),
-						new SokoPredicate("ClearAt", playerPos.toString(), playerPos.toString())));
-				pa.setPreConditions(new Clause(new SokoPredicate("ClearAt", topPredicate.getValue(), topPredicate.getValue())));
-				pa.setSubActions(solution.getActionList());
-				satisfyingActions.add(pa);
-			}
-			else
-				return null;
+			bl.add(b.getPos());
+		}
+		ArrayList<Position> dl=new ArrayList<>();
+		for (Item d : level.getDestinationList())
+		{
+			dl.add(d.getPos());
+		}
+		for(int i=0;i<dl.size();i++)
+		{
+			coupleTable.put("b"+(i+1), dl.get(i).toString());
 		}
 		
-		return satisfyingActions;
+		
+		return coupleTable;
 	}
+
+
+
 	
 	private Clause getSolutionPreConditions(Solution solution,Position pos)
 	{

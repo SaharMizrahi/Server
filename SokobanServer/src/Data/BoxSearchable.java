@@ -11,7 +11,11 @@ import SearchLib.ComplexAction;
 import SearchLib.Searcher;
 import SearchLib.Solution;
 import SearchLib.State;
-
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ *
+ */
 public class BoxSearchable extends CommonSearchable
 {
 	private Searcher<Position> searcher;
@@ -22,82 +26,9 @@ public class BoxSearchable extends CommonSearchable
 	private Position currentSearchableBox;
 
 	
-
- 	public BoxSearchable(Position fromPosition, Position toPosition, Level2D level,
-			Searcher<Position> searcher,PlayerSearchable playerSearchable) {
-		super(fromPosition, toPosition, level);
-		// TODO Auto-generated constructor stub
-		currentBoxPositions=new LinkedList<>();
-		for(Item it : level.getBoxList())
-			currentBoxPositions.add(it.getPos());
-		this.searcher=searcher;
-		this.playerSearchable=playerSearchable;
-		if(playerSearchable!=null)
-			this.playerPosition=playerSearchable.getFromPosition();
-		initCharMap();
-	}
-	public void initCharMap()
-	{
-		
-		Item[][] itemMap=this.getLevel().getMap();
-		if(this.getLevel()!=null)
-		{
-			int width=this.getLevel().getWidth();
-			int hight=this.getLevel().getLength();
-			charMap=new char[hight][width];
-			for(int i=0;i<hight;i++)
-				for(int j=0;j<width;j++)
-				{
-					
-					charMap[i][j]=itemMap[i][j].getChar();
-
-
-				}
-		}
-	}
-	public char[][] getCharMap()
-	{
-		return charMap;
-	}
-
-	public void setCharMap(char[][] charMap)
-	{
-		this.charMap = charMap;
-	}
-
-	public Position getPlayerNeededPosition(Position boxPos,Action action)
-	{
-		switch (action)
-		{
-			case UP:
-				return boxPos.getDown();
-			case DOWN:
-				return boxPos.getUp();
-			case RIGHT:
-				return boxPos.getLeft();
-			case LEFT:
-				return boxPos.getRight();
-		}
-		return null;
-	}
-	public Position getBoxNextPosition(Position position,Action action)
-	{
-		
-		switch(action)
-		{
-		case UP:
-			return position.getUp();
-		case DOWN:
-			return position.getDown();
-		case RIGHT:
-			return position.getRight();
-		case LEFT:
-			return position.getLeft();
-		}
-		return null;
-		
-	}
-
+	/************************/
+	/***implemented methods**/
+	/************************/
 	@Override
 	public HashMap<ComplexAction, State<Position>> getAllPossibleStates(State<Position> s)
 	{
@@ -112,7 +43,6 @@ public class BoxSearchable extends CommonSearchable
 		currentBoxPositions.remove(currentSearchableBox);
 		currentBoxPositions.add(s.getState());
 		playerSearchable.setCurrentBoxPositions(currentBoxPositions);
-		//System.out.println(currentBoxPositions);
 		}
 		
 		
@@ -149,7 +79,6 @@ public class BoxSearchable extends CommonSearchable
 
 			currentBoxPositions.remove(s.getState());
 			currentBoxPositions.add(currentSearchableBox);
-			//System.out.println(currentBoxPositions);
 
 			
 		}
@@ -159,15 +88,19 @@ public class BoxSearchable extends CommonSearchable
 
 	}
 
-
-
-	public Position getCurrentSearchableBox()
-	{
-		return currentSearchableBox;
-	}
-	public void setCurrentSearchableBox(Position currentSearchableBox)
-	{
-		this.currentSearchableBox = currentSearchableBox;
+	//constructor
+ 	public BoxSearchable(Position fromPosition, Position toPosition, Level2D level,
+			Searcher<Position> searcher,PlayerSearchable playerSearchable) {
+		super(fromPosition, toPosition, level);
+		// TODO Auto-generated constructor stub
+		currentBoxPositions=new LinkedList<>();
+		for(Item it : level.getBoxList())
+			currentBoxPositions.add(it.getPos());
+		this.searcher=searcher;
+		this.playerSearchable=playerSearchable;
+		if(playerSearchable!=null)
+			this.playerPosition=playerSearchable.getFromPosition();
+		initCharMap();
 	}
 	@Override
 	public boolean checkPossibleMove(Position currentPosition, Action action)
@@ -226,31 +159,47 @@ public class BoxSearchable extends CommonSearchable
 
 	}
 
+ 	
+ 	
+	/***************************/
+	/****getters and setters****/
+	/***************************/
+	public char[][] getCharMap()
+	{
+		return charMap;
+	}
+	public void setCharMap(char[][] charMap)
+	{
+		this.charMap = charMap;
+	}
+	public Position getCurrentSearchableBox()
+	{
+		return currentSearchableBox;
+	}
+	public void setCurrentSearchableBox(Position currentSearchableBox)
+	{
+		this.currentSearchableBox = currentSearchableBox;
+	}
 	public Searcher<Position> getSearcher()
 	{
 		return searcher;
 	}
-
 	public void setSearcher(Searcher<Position> searcher)
 	{
 		this.searcher = searcher;
 	}
-
-	public PlayerSearchable getPlayerSearchable()
-	{
-		return playerSearchable;
-	}
-
 	public void setPlayerSearchable(PlayerSearchable playerSearchable)
 	{
 		this.playerSearchable = playerSearchable;
 	}
-
 	public Position getPlayerPosition()
 	{
 		return playerPosition;
 	}
-
+	public PlayerSearchable getPlayerSearchable()
+	{
+		return playerSearchable;
+	}
 	public void setPlayerPosition(Position playerPosition)
 	{
 		if(playerSearchable!=null)
@@ -266,5 +215,62 @@ public class BoxSearchable extends CommonSearchable
 		this.currentBoxPositions = currentBoxPositions;
 	}
 	
+
+	
+	/***********************/
+	/***private methods*****/
+	/***********************/
+	private void initCharMap()
+	{
+		
+		Item[][] itemMap=this.getLevel().getMap();
+		if(this.getLevel()!=null)
+		{
+			int width=this.getLevel().getWidth();
+			int hight=this.getLevel().getLength();
+			charMap=new char[hight][width];
+			for(int i=0;i<hight;i++)
+				for(int j=0;j<width;j++)
+				{
+					
+					charMap[i][j]=itemMap[i][j].getChar();
+
+
+				}
+		}
+	}
+	private Position getPlayerNeededPosition(Position boxPos,Action action)
+	{
+		switch (action)
+		{
+			case UP:
+				return boxPos.getDown();
+			case DOWN:
+				return boxPos.getUp();
+			case RIGHT:
+				return boxPos.getLeft();
+			case LEFT:
+				return boxPos.getRight();
+		}
+		return null;
+	}
+	private Position getBoxNextPosition(Position position,Action action)
+	{
+		
+		switch(action)
+		{
+		case UP:
+			return position.getUp();
+		case DOWN:
+			return position.getDown();
+		case RIGHT:
+			return position.getRight();
+		case LEFT:
+			return position.getLeft();
+		}
+		return null;
+		
+	}
+
 
 }

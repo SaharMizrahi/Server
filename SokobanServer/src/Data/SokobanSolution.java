@@ -5,11 +5,19 @@ import java.util.List;
 
 import SearchLib.Action;
 import StripsLib.PlanAction;
-
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ *
+ */
 public class SokobanSolution
 {
 	private List<Action> solution;
 
+	/**
+	 * 
+	 * @return compressed solution  <direction as char><number>
+	 */
 	public String getCompresedSolution()
 	{
 		String compresedSolution="";
@@ -60,6 +68,7 @@ public class SokobanSolution
 			return null;
 		
 	}
+	//constructor	
 	public SokobanSolution(List<PlanAction> solutionList) {
 		super();
 		solution=new LinkedList<>();

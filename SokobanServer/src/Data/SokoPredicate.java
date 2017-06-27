@@ -1,7 +1,11 @@
 package Data;
 
 import StripsLib.Predicate;
-
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ *
+ */
 public class SokoPredicate extends Predicate
 {
 

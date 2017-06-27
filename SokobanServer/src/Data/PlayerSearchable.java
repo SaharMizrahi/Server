@@ -10,26 +10,19 @@ import Model.Data.Wall;
 import SearchLib.Action;
 import SearchLib.ComplexAction;
 import SearchLib.State;
-
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ *
+ */
 public class PlayerSearchable extends CommonSearchable
 {
 
 	private char[][] charMap;
 	private LinkedList<Position> currentBoxPositions;
-	public PlayerSearchable(Position fromPosition, Position toPosition, Level2D level) {
-		super(fromPosition, toPosition, level);
-		// TODO Auto-generated constructor stub
-	}
-
-	public LinkedList<Position> getCurrentBoxPositions()
-	{
-		return currentBoxPositions;
-	}
-
-	public void setCurrentBoxPositions(LinkedList<Position> currentBoxPositions)
-	{
-		this.currentBoxPositions = currentBoxPositions;
-	}
+	/**************************/
+	/****implemented methods***/
+	/**************************/
 
 	@Override
 	public HashMap<ComplexAction, State<Position>> getAllPossibleStates(State<Position> s)
@@ -105,6 +98,27 @@ public class PlayerSearchable extends CommonSearchable
 
 
 		return false;
+	}
+
+	
+	//constructor
+	public PlayerSearchable(Position fromPosition, Position toPosition, Level2D level) {
+		super(fromPosition, toPosition, level);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	/***********************/
+	/**getters and setters**/
+	/***********************/
+	public LinkedList<Position> getCurrentBoxPositions()
+	{
+		return currentBoxPositions;
+	}
+
+	public void setCurrentBoxPositions(LinkedList<Position> currentBoxPositions)
+	{
+		this.currentBoxPositions = currentBoxPositions;
 	}
 
 	public char[][] getCharMap()

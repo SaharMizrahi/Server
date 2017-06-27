@@ -6,12 +6,16 @@ import Model.Data.Level;
 import Model.Data.Level2D;
 import StripsLib.PlanAction;
 import StripsLib.Strips;
-
+/**
+ * 
+ * @author Sahar Mizrahi and Gal Ezra
+ * 
+ */
 public class SokobanSolver
 {
-	private SokobanSolution solution;
 	public SokobanSolution solve2DLevel(Level level)
 	{
+		SokobanSolution solution = null;
 		if(level instanceof Level2D)
 		{
 			PlannableSokoban ps=new PlannableSokoban((Level2D) level);

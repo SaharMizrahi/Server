@@ -1,7 +1,11 @@
 package View;
 
 import javafx.beans.property.SimpleStringProperty;
-
+/**
+ * This class is the form of row in the table in the view GUI
+ * @author Sahar Mizrahi and Gal ezra
+ *
+ */
 public class Session {
 	
 	private SimpleStringProperty client;
@@ -10,7 +14,18 @@ public class Session {
 	private SimpleStringProperty state;
 	
 	
-	
+	//constructor
+	public Session(String clientNumber, String process, String time,
+			String state) {
+		super();
+		this.client = new SimpleStringProperty(clientNumber);
+		this.process = new SimpleStringProperty(process);
+		this.time = new SimpleStringProperty(time);
+		this.state = new SimpleStringProperty(state);
+	}
+	/************************/
+	/***getters and setters**/
+	/************************/
 	public String getClient() {
 		
 		return client.get();
@@ -36,14 +51,7 @@ public class Session {
 	public void setState(String state) {
 		this.state.set(state);
 	}
-	public Session(String clientNumber, String process, String time,
-			String state) {
-		super();
-		this.client = new SimpleStringProperty(clientNumber);
-		this.process = new SimpleStringProperty(process);
-		this.time = new SimpleStringProperty(time);
-		this.state = new SimpleStringProperty(state);
-	}
+
 	
 	
 	

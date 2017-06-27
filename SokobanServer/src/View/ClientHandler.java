@@ -12,8 +12,22 @@ import java.io.OutputStream;
 
 public interface ClientHandler  {
 
+	/**
+	 * 
+	 * @return the client request
+	 */
 	String getRequest();
+	/**
+	 * 
+	 * @param str-answer to the client
+	 */
 	void setReturnedAnswer(String str);
+	/**
+	 * 
+	 * @return client's index
+	 */
+	int getIndex();
+	
 	
 
 }

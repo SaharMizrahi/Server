@@ -14,6 +14,9 @@ public class ServerModel  extends Observable implements ModelInterface   {
 	private boolean isSolution;
 	private boolean isDB;
 
+	/**
+	 * Default constructor
+	 */
 	public ServerModel() {
 		super();
 		this.solution = "block";
@@ -31,10 +34,6 @@ public class ServerModel  extends Observable implements ModelInterface   {
 		setSolution(res);
 
 	}
-
-	
-	
-
 	@Override
 	public void SearchForDBData(String data) {
 		// TODO Auto-generated method stub
@@ -44,12 +43,6 @@ public class ServerModel  extends Observable implements ModelInterface   {
 	public void postRecord(String record) {
 		// TODO Auto-generated method stub
 		
-	}
-	private String askForSolution(String levelDescription) {
-		// TODO Auto-generated method stub
-		
-		return "block";
-
 	}
 	@Override
 	public String getDBData() {
@@ -63,17 +56,19 @@ public class ServerModel  extends Observable implements ModelInterface   {
 		isSolution=false;
 		return this.solution;
 	}
-	/********************************/
-	/********getters and setters****/
-	/********************************/
+	@Override
 	public boolean isSolution()
 	{
 		return isSolution;
 	}
+	@Override
 	public boolean isDB()
 	{
 		return isDB;
 	}
+	/********************************/
+	/********getters and setters****/
+	/********************************/
 	public void setDBFlag(boolean bool)
 	{
 		isDB=bool;
@@ -82,12 +77,20 @@ public class ServerModel  extends Observable implements ModelInterface   {
 	{
 		isSolution=bool;
 	}
+	/**
+	 * update the arrived db data and notify all observers
+	 * @param dbData-new dbData
+	 */
 	public void setDbData(String dbData) {
 		this.dbData = dbData;
 		isDB=true;
 		setChanged();
 		notifyObservers();
 	}
+	/**
+	 * update the arrived solution and notify all observers
+	 * @param solution-new solution
+	 */
 	public void setSolution(String solution) {
 		this.solution = solution;
 		isSolution=true;
@@ -98,9 +101,22 @@ public class ServerModel  extends Observable implements ModelInterface   {
 	/**********************************/
 	/*************private methods******/
 	/**********************************/
+	/**
+	 * This method checks if there is a solution to the level described in 'levelDescription'
+	 * @param levelDescription
+	 * @return solution from WS or "block" if there isn't
+	 */
+	private String askForSolution(String levelDescription) {
+		
+		return "block";
 
+	}
+	/**
+	 * 
+	 * @param levelDescription
+	 * @return solution  or "block" if he blocked
+	 */
 	private String solveLevel(String levelDescription) {
-		// TODO Auto-generated method stub
 		Level level=lcag.generate(levelDescription);
 		SokobanSolver solver=new SokobanSolver();
 		SokobanSolution solution=solver.solve2DLevel(level);
