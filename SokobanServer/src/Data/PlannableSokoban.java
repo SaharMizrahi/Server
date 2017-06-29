@@ -59,13 +59,14 @@ public class PlannableSokoban implements Plannable
 		if(topPredicate.getType().equals("BoxAt"))
 		{
 
-			for(Predicate p : kb.getPredicatesSet())
+			for(Predicate p : kb.getPredicatesSet())//get player and box positions from knowledgebase
 			{
 				if(topPredicate.getId().equals(p.getId()))
 					boxKbPred=p;
 				if(p.getType().equals("PlayerAt"))
 					playerKbPred=p;
 			}
+			//init positions
 			playerPos=new Position(playerKbPred.getValue().toCharArray()[1]-48, playerKbPred.getValue().toCharArray()[3]-48);
 			boxPos=new Position(boxKbPred.getValue().toCharArray()[1]-48, boxKbPred.getValue().toCharArray()[3]-48);
 			goalPos=new Position(topPredicate.getValue().toCharArray()[1]-48, topPredicate.getValue().toCharArray()[3]-48);
@@ -78,10 +79,10 @@ public class PlannableSokoban implements Plannable
 			searchable.setPlayerPosition(playerPos);
 			searchable.setCurrentBoxPositions(boxCurrentPositions);
 			searchable.setCurrentSearchableBox(boxPos);
-			
+			//search for path to goal
 			Solution solution=mainBfs.search(searchable);
 		
-			if(solution!=null)
+			if(solution!=null)//we got satsfying actions
 			{
 				//this is the player last position
 				playerCurrentPosition=(Position) mainBfs.getFinalState().getCameFrom().getState();
@@ -171,6 +172,11 @@ public class PlannableSokoban implements Plannable
 	/*********************/
 	/**private methods****/
 	/*********************/
+	/**
+	 *   this method attach each box to target by some order that can be changed
+	 * @param level
+	 * @return coupled box and target
+	 */
 	private HashMap<String, String> getCoupledBoxAndDest(Level2D level)
 	{
 		HashMap<String, String> coupleTable=new HashMap<>();

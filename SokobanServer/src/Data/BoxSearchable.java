@@ -55,14 +55,14 @@ public class BoxSearchable extends CommonSearchable
 		ComplexAction ca=null;
 		HashMap<ComplexAction, State<Position>> possibleStates=new HashMap<>();
 		Position boxPos=s.getState();
-		for(Action action: Action.values())
+		for(Action action: Action.values())//check for each direction if the player can reach there
 		{
 			if(this.checkPossibleMove(boxPos, action))
 			{
 				playerSearchable.setFromPosition(playerPosition);
 				playerSearchable.setToPosition(this.getPlayerNeededPosition(boxPos, action));
 				playerSearchable.setLevel(getLevel());
-				playerPath=searcher.search(playerSearchable);
+				playerPath=searcher.search(playerSearchable);//find path
 				if(playerPath!=null)
 				{
 					boxNextPos=this.getBoxNextPosition(boxPos, action);

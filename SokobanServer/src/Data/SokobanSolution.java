@@ -50,7 +50,7 @@ public class SokobanSolution
 						numOfChars++;
 					else
 					{
-						compresedSolution+=""+prevCh+""+numOfChars+"-";
+						compresedSolution+=""+prevCh+""+numOfChars+"P";
 						prevCh=currentCh;
 						numOfChars=1;
 					}
